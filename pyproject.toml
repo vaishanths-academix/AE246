@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ae246-hw1"
+version = "0.1.0"
+description = "AE 246 HW1 strip-theory wing and pitching-moment analysis"
+requires-python = ">=3.10"
+dependencies = ["numpy>=2.0", "matplotlib>=3.7"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
