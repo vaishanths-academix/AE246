@@ -15,6 +15,7 @@ Internal units:
 from __future__ import annotations
 
 import re
+import math
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,6 +26,8 @@ import matplotlib.pyplot as plt
 # =========================
 S = 1950.0           # ft^2
 cbar = 16.6417       # ft (MAC)
+dihedral = 28.4286 * math.pi/180
+
 cl0_2d = 0.1042
 cla_2d = 7.2856       # 1/rad
 
@@ -96,11 +99,18 @@ def solve_q1(y: np.ndarray, c: np.ndarray, i: np.ndarray) -> dict:
     """
     alpha = np.deg2rad(alpha_q1_deg)
 
-    # CL0 = (2/S) ∫ (cl0 + cla*i(y)) * c(y) dy
-    CL0 = (2.0 / S) * np.trapezoid((cl0_2d + cla_2d * i) * c, y)
+    # ---- Correct swept-wing CL0 ----
+    # Camber term
+    CL0_camber = cl0_2d * np.cos(dihedral) ** 2
+
+    # Twist term
+    twist_integral = np.trapezoid(i * c, y)
+    CL0_twist = (2.0 * cla_2d * np.cos(dihedral) / S) * twist_integral
+
+    CL0 = CL0_camber + CL0_twist
 
     # CLalpha = (2/S) ∫ cla * c(y) dy
-    CLalpha = (2.0 / S) * np.trapezoid((cla_2d) * c, y)
+    CLalpha = cla_2d * math.cos(dihedral)
 
     CL = CL0 + CLalpha * alpha
 
